@@ -13,11 +13,6 @@ float readTemperature() {
   return temperatureC;
 }
 
-int readBrightness() {
-  int value = analogRead(PHOTO_PIN);
-  return (value >= LIGHT_THRESHOLD) ? HIGH : LOW;
-}
-
 void setup() {
   Serial.begin(9600);
   pinMode(ALERT_PIN, OUTPUT);
@@ -25,13 +20,13 @@ void setup() {
 
 void loop() {
   float temperature = readTemperature();
-  int brightnessDigital = readBrightness();
-  int brightnessValue = analogRead(PHOTO_PIN);
+  int scaledBrightness = map(analogRead(PHOTO_PIN), 0, 1023, 0, 300);
+  int brightnessDigital = (scaledBrightness >= LIGHT_THRESHOLD) ? HIGH : LOW;
 
   Serial.print("Temperature: ");
   Serial.print(temperature);
   Serial.print(" °C | Brightness: ");
-  Serial.print(brightnessValue);
+  Serial.print(scaledBrightness);
   Serial.println(brightnessDigital == HIGH ? " (Bright)" : " (Dark)");
 
   if (temperature >= TEMP_THRESHOLD && brightnessDigital == HIGH) {
